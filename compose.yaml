@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.1
+    container_name: mysql-pedidohub
+    environment:
+      MYSQL_ROOT_PASSWORD: pedidohub
+      MYSQL_DATABASE: pedidohub
+      MYSQL_USER: pedidohub
+      MYSQL_PASSWORD: pedidohub
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - pedidohub-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      retries: 3
+
+
+  springboot-app:
+    image: openjdk:21
+    container_name: springboot-pedidohub
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/pedidohub
+      SPRING_DATASOURCE_USERNAME: pedidohub
+      SPRING_DATASOURCE_PASSWORD: pedidohub
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+    depends_on:
+      - mysql
+    networks:
+      - pedidohub-net
+
+networks:
+  pedidohub-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

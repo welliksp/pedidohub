@@ -1,0 +1,16 @@
+INSERT INTO tb_categoria (id, nome, descricao, data_criacao, data_atualizacao) VALUES
+(UUID(), 'Informática', 'Equipamentos e acessórios de tecnologia como notebooks, desktops, monitores, mouses e teclados.', NOW(), null),
+(UUID(), 'Eletrodomésticos', 'Linha branca e utilidades para o lar como geladeiras, fogões, máquinas de lavar e micro-ondas.', NOW(), null),
+(UUID(), 'Celulares e Telefonia', 'Smartphones, acessórios, telefones fixos e dispositivos móveis.', NOW(), null),
+(UUID(), 'Eletrônicos', 'TVs, home theaters, caixas de som, receptores e dispositivos de áudio e vídeo.', NOW(), null),
+(UUID(), 'Móveis', 'Sofás, camas, mesas, guarda-roupas, estantes e móveis planejados.', NOW(), null),
+(UUID(), 'Decoração', 'Artigos decorativos como quadros, luminárias, cortinas, tapetes e vasos.', NOW(), null),
+(UUID(), 'Utilidades Domésticas', 'Itens para o dia a dia como panelas, talheres, potes, utensílios de cozinha e lavanderia.', NOW(), null),
+(UUID(), 'Beleza e Perfumaria', 'Produtos para cuidados pessoais, maquiagens, perfumes e aparelhos de beleza.', NOW(), null),
+(UUID(), 'Moda', 'Roupas, calçados, bolsas e acessórios masculinos, femininos e infantis.', NOW(), null),
+(UUID(), 'Esporte e Lazer', 'Equipamentos esportivos, bicicletas, itens de camping, academia e lazer ao ar livre.', NOW(), null),
+(UUID(), 'Brinquedos', 'Brinquedos educativos, jogos, bonecas, carrinhos, blocos de montar e muito mais.', NOW(), null),
+(UUID(), 'Bebês e Primeira Infância', 'Fraldas, carrinhos, berços, cadeirinhas, roupas e acessórios para bebês.', NOW(), null),
+(UUID(), 'Papelaria e Escritório', 'Materiais escolares, organizadores, cadeiras, mesas e suprimentos para home office.', NOW(), null),
+(UUID(), 'Ferramentas e Construção', 'Ferramentas elétricas e manuais, materiais para reparo, reforma e jardinagem.', NOW(), null),
+(UUID(), 'Automotivo', 'Peças, acessórios, som automotivo, limpeza e manutenção de veículos.', NOW(), null);
