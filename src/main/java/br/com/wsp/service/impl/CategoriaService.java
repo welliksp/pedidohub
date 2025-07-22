@@ -74,7 +74,7 @@ public class CategoriaService implements ICategoriaService {
         log.debug("Buscando categoria por ID: {}", id);
 
         Categoria categoria = repository.findById(id).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + id));
-        ;
+
 
         return Optional.of(new CategoriaResponse(categoria.getId(), categoria.getNome(), categoria.getDescricao()));
     }
@@ -94,6 +94,6 @@ public class CategoriaService implements ICategoriaService {
     private void validaCategoriaExistente(UUID id) throws Exception {
 
         findById(id).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + id));
-        ;
+
     }
 }
