@@ -32,14 +32,13 @@ public class ProdutoService implements IProdutoService {
     @Override
     @Transactional
     public Optional<ProdutoResponse> save(ProdutoRequest request) throws Exception {
-        log.debug("Iniciando salvamento de novo produto: {}", request);
+        log.debug("Iniciando salvamento de novo produtoId: {}", request);
 
         Optional<Categoria> categoria = categoriaRepository.findById(request.categoria());
 
         if (categoria.isEmpty()) {
             throw new Exception("Categoria não encontrada");
         }
-
 
         Produto produto = Produto.builder()
                 .nome(request.nome())
@@ -74,7 +73,7 @@ public class ProdutoService implements IProdutoService {
     @Override
     @Transactional
     public Optional<ProdutoResponse> update(UUID id, ProdutoRequest request) {
-        log.debug("Iniciando atualização do produto. ID: {}, Request: {}", id, request);
+        log.debug("Iniciando atualização do produtoId. ID: {}, Request: {}", id, request);
         Optional<Produto> produto = repository.findById(id);
 
         if (produto.isEmpty()) {
@@ -103,7 +102,7 @@ public class ProdutoService implements IProdutoService {
 
     @Override
     public Optional<ProdutoResponse> findById(UUID id) {
-        log.debug("Buscando produto por ID: {}", id);
+        log.debug("Buscando produtoId por ID: {}", id);
         Optional<Produto> produto = repository.findById(id);
 
         if (produto.isEmpty()) {
@@ -123,7 +122,7 @@ public class ProdutoService implements IProdutoService {
     @Override
     @Transactional
     public void delete(UUID id) throws Exception {
-        log.debug("Iniciando exclusão do produto. ID: {}", id);
+        log.debug("Iniciando exclusão do produtoId. ID: {}", id);
 
         validaProdutoExistente(id);
 

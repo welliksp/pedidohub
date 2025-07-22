@@ -41,8 +41,8 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers(HttpMethod.POST, "/login/v1").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users/v1").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/v1/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/v1/user").permitAll()
                                 .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

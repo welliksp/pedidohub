@@ -1,4 +1,4 @@
-INSERT INTO tb_users (first_name, last_name, username, email, birthdate, password)
+INSERT INTO tb_user (first_name, last_name, username, email, birthdate, password)
 VALUES (
            'Admin',
            'Admin',
