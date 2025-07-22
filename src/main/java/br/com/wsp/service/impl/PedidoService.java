@@ -4,8 +4,14 @@ import br.com.wsp.dto.ItemPedidoResponse;
 import br.com.wsp.dto.PedidoRequest;
 import br.com.wsp.dto.PedidoResponse;
 import br.com.wsp.dto.ProdutoResponse;
-import br.com.wsp.entity.*;
+import br.com.wsp.entity.ItemPedido;
+import br.com.wsp.entity.Pedido;
+import br.com.wsp.entity.Produto;
+import br.com.wsp.entity.User;
 import br.com.wsp.enums.StatusPedido;
+import br.com.wsp.exception.EstoqueInsuficienteException;
+import br.com.wsp.exception.NotFoundException;
+import br.com.wsp.exception.PedidoProcessadoException;
 import br.com.wsp.repository.ItemPedidoRepository;
 import br.com.wsp.repository.PedidoRepository;
 import br.com.wsp.repository.ProdutoRepository;
@@ -52,7 +58,7 @@ public class PedidoService implements IPedidoService {
 
         List<ItemPedido> itemPedidoList = request.itens().stream().map(item -> {
             Produto produto = produtoRepository.findById(item.produtoId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                    .orElseThrow(() -> new NotFoundException("Pedido não encontrado com ID: " + item.produtoId()));
 
             return ItemPedido.builder()
                     .produto(produto)
@@ -112,14 +118,14 @@ public class PedidoService implements IPedidoService {
 
         Optional<Pedido> optionalPedido = repository.findById(id);
         if (optionalPedido.isEmpty()) {
-            return Optional.empty();
+            throw new NotFoundException("Pedido não encontrado com ID: " + id);
         }
 
         Pedido pedido = optionalPedido.get();
 
         Optional<User> user = userRepository.findById(request.userId());
         if (user.isEmpty()) {
-            return Optional.empty();
+            throw new NotFoundException("Usuário não encontrado com ID: " + id);
         }
         pedido.setUser(user.get());
 
@@ -174,7 +180,7 @@ public class PedidoService implements IPedidoService {
 
         Optional<Pedido> optionalPedido = repository.findById(id);
         if (optionalPedido.isEmpty()) {
-            return Optional.empty();
+            throw new NotFoundException("Pedido não encontrado com ID: " + id);
         }
 
         Pedido pedido = optionalPedido.get();
@@ -225,24 +231,25 @@ public class PedidoService implements IPedidoService {
     public Optional<PedidoResponse> pagar(UUID pedidoId) {
         Optional<Pedido> optionalPedido = repository.findById(pedidoId);
         if (optionalPedido.isEmpty()) {
-            return Optional.empty();
+            throw new NotFoundException("Pedido não encontrado com ID: " + pedidoId);
+
         }
 
         Pedido pedido = optionalPedido.get();
         if (pedido.getStatus() != StatusPedido.PENDENTE) {
-            throw new IllegalStateException("Pedido já processado.");
+            throw new PedidoProcessadoException("Pedido já processado.");
         }
 
         BigDecimal totalCalculado = BigDecimal.ZERO;
 
         for (ItemPedido item : pedido.getItens()) {
             Produto produto = produtoRepository.findById(item.getProduto().getId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                    .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
 
             if (produto.getQuantidadeEstoque() < item.getQuantidade()) {
                 pedido.setStatus(StatusPedido.CANCELADO);
                 repository.save(pedido);
-                throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
+                throw new EstoqueInsuficienteException("Estoque insuficiente para o produto: " + produto.getNome());
             }
 
             BigDecimal subtotal = produto.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade()));
@@ -271,6 +278,6 @@ public class PedidoService implements IPedidoService {
 
     private void validaPedidoExistente(UUID id) throws Exception {
         findById(id).orElseThrow(() ->
-                new Exception("Pedido não encontrado com ID: " + id));
+                new NotFoundException("Pedido não encontrado com ID: " + id));
     }
 }

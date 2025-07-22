@@ -4,6 +4,7 @@ import br.com.wsp.dto.UserRequest;
 import br.com.wsp.dto.UserResponse;
 import br.com.wsp.entity.Role;
 import br.com.wsp.entity.User;
+import br.com.wsp.exception.UsuarioCadastradoException;
 import br.com.wsp.repository.RoleRepository;
 import br.com.wsp.repository.UserRepository;
 import br.com.wsp.service.IUserService;
@@ -70,7 +71,7 @@ public class UserService implements IUserService {
 
         List<User> byEmail = userRepository.findByEmail(email);
         if (!byEmail.isEmpty()) {
-            throw new Exception("Usuario possui cadatro");
+            throw new UsuarioCadastradoException("Usuario possui cadatro");
         }
 
 

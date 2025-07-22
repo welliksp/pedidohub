@@ -3,6 +3,7 @@ package br.com.wsp.service.impl;
 import br.com.wsp.dto.CategoriaRequest;
 import br.com.wsp.dto.CategoriaResponse;
 import br.com.wsp.entity.Categoria;
+import br.com.wsp.exception.NotFoundException;
 import br.com.wsp.repository.CategoriaRepository;
 import br.com.wsp.service.ICategoriaService;
 import jakarta.transaction.Transactional;
@@ -34,8 +35,8 @@ public class CategoriaService implements ICategoriaService {
                 .nome(request.nome())
                 .descricao(request.descricao())
                 .build();
-        
-        
+
+
         Categoria saved = repository.save(categoria);
         log.info("Categoria salva com sucesso. ID: {}", saved.getId());
 
@@ -55,13 +56,9 @@ public class CategoriaService implements ICategoriaService {
     public Optional<CategoriaResponse> update(UUID id, CategoriaRequest request) {
         log.debug("Iniciando atualização da categoria. ID: {}, Request: {}", id, request);
 
-        Optional<Categoria> categoria = repository.findById(id);
+        Categoria categoria = repository.findById(id).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + id));
 
-        if (categoria.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Categoria toUpdate = categoria.get();
+        Categoria toUpdate = categoria;
         toUpdate.setNome(request.nome());
         toUpdate.setDescricao(request.descricao());
 
@@ -73,16 +70,19 @@ public class CategoriaService implements ICategoriaService {
 
     @Override
     public Optional<CategoriaResponse> findById(UUID id) {
+
         log.debug("Buscando categoria por ID: {}", id);
 
-        Optional<Categoria> categoria = repository.findById(id);
+        Categoria categoria = repository.findById(id).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + id));
+        ;
 
-        return Optional.of(new CategoriaResponse(categoria.get().getId(), categoria.get().getNome(), categoria.get().getDescricao()));
+        return Optional.of(new CategoriaResponse(categoria.getId(), categoria.getNome(), categoria.getDescricao()));
     }
 
     @Override
     @Transactional
     public void delete(UUID id) throws Exception {
+
         log.debug("Iniciando exclusão da categoria. ID: {}", id);
 
         validaCategoriaExistente(id);
@@ -93,6 +93,7 @@ public class CategoriaService implements ICategoriaService {
 
     private void validaCategoriaExistente(UUID id) throws Exception {
 
-        findById(id).orElseThrow(Exception::new);
+        findById(id).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + id));
+        ;
     }
 }

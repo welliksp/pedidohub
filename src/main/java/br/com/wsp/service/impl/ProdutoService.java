@@ -4,6 +4,7 @@ import br.com.wsp.dto.ProdutoRequest;
 import br.com.wsp.dto.ProdutoResponse;
 import br.com.wsp.entity.Categoria;
 import br.com.wsp.entity.Produto;
+import br.com.wsp.exception.NotFoundException;
 import br.com.wsp.repository.CategoriaRepository;
 import br.com.wsp.repository.ProdutoRepository;
 import br.com.wsp.service.IProdutoService;
@@ -34,18 +35,14 @@ public class ProdutoService implements IProdutoService {
     public Optional<ProdutoResponse> save(ProdutoRequest request) throws Exception {
         log.debug("Iniciando salvamento de novo produtoId: {}", request);
 
-        Optional<Categoria> categoria = categoriaRepository.findById(request.categoria());
-
-        if (categoria.isEmpty()) {
-            throw new Exception("Categoria não encontrada");
-        }
+        Categoria categoria = categoriaRepository.findById(request.categoria()).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + request.categoria() ));;
 
         Produto produto = Produto.builder()
                 .nome(request.nome())
                 .descricao(request.descricao())
                 .preco(request.preco())
                 .quantidadeEstoque(request.quantidadeEstoque())
-                .categoria(categoria.get())
+                .categoria(categoria)
                 .dataCriacao(LocalDateTime.now())
                 .dataAtualizacao(null)
                 .build();
@@ -74,24 +71,16 @@ public class ProdutoService implements IProdutoService {
     @Transactional
     public Optional<ProdutoResponse> update(UUID id, ProdutoRequest request) {
         log.debug("Iniciando atualização do produtoId. ID: {}, Request: {}", id, request);
-        Optional<Produto> produto = repository.findById(id);
+        Produto produto = repository.findById(id).orElseThrow(() -> new NotFoundException("Produto não encontrada com ID: " + request.categoria() ));;;
 
-        if (produto.isEmpty()) {
-            return Optional.empty();
-        }
+        Categoria categoria = categoriaRepository.findById(request.categoria()).orElseThrow(() -> new NotFoundException("Categoria não encontrada com ID: " + request.categoria() ));;;
 
-        Optional<Categoria> categoria = categoriaRepository.findById(request.categoria());
-
-        if (categoria.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Produto toUpdate = produto.get();
+        Produto toUpdate = produto;
         toUpdate.setNome(request.nome());
         toUpdate.setDescricao(request.descricao());
         toUpdate.setPreco(request.preco());
         toUpdate.setQuantidadeEstoque(request.quantidadeEstoque());
-        toUpdate.setCategoria(categoria.get());
+        toUpdate.setCategoria(categoria);
         toUpdate.setDataAtualizacao(LocalDateTime.now());
 
         Produto updated = repository.save(toUpdate);
@@ -103,19 +92,16 @@ public class ProdutoService implements IProdutoService {
     @Override
     public Optional<ProdutoResponse> findById(UUID id) {
         log.debug("Buscando produtoId por ID: {}", id);
-        Optional<Produto> produto = repository.findById(id);
+        Produto produto = repository.findById(id).orElseThrow(() -> new NotFoundException("Produto não encontrada com ID: " + id ));;;
 
-        if (produto.isEmpty()) {
-            return Optional.empty();
-        }
 
         return Optional.of(new ProdutoResponse(
-                produto.get().getId(),
-                produto.get().getNome(),
-                produto.get().getDescricao(),
-                produto.get().getPreco(),
-                produto.get().getCategoria().getNome(),
-                produto.get().getQuantidadeEstoque()
+                produto.getId(),
+                produto.getNome(),
+                produto.getDescricao(),
+                produto.getPreco(),
+                produto.getCategoria().getNome(),
+                produto.getQuantidadeEstoque()
         ));
     }
 
@@ -132,6 +118,6 @@ public class ProdutoService implements IProdutoService {
 
     private void validaProdutoExistente(UUID id) throws Exception {
 
-        findById(id).orElseThrow(Exception::new);
+        findById(id).orElseThrow(() -> new NotFoundException("Produto não encontrada com ID: " + id ));;;
     }
 }
