@@ -5,6 +5,7 @@ import br.com.wsp.dto.PedidoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,4 +22,6 @@ public interface IPedidoService {
     void delete(UUID id) throws Exception;
 
     Optional<PedidoResponse> pagar(UUID pedidoId);
+
+    List<PedidoResponse> findByUser(Long id);
 }

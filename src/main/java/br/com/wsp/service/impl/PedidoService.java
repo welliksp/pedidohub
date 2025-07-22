@@ -276,6 +276,35 @@ public class PedidoService implements IPedidoService {
         return Optional.of(new PedidoResponse(pago.getId(), pago.getStatus(), itens));
     }
 
+    @Override
+    public List<PedidoResponse> findByUser(Long id) {
+
+        List<Pedido> listByUser = repository.findByUser(id);
+
+        return listByUser.stream()
+                .map(pedido -> new PedidoResponse(
+                        pedido.getId(),
+                        pedido.getStatus(),
+                        pedido.getItens().stream()
+                                .map(item -> new ItemPedidoResponse(
+                                        item.getId(),
+                                        new ProdutoResponse(
+                                                item.getProduto().getId(),
+                                                item.getProduto().getNome(),
+                                                item.getProduto().getDescricao(),
+                                                item.getProduto().getPreco(),
+                                                item.getProduto().getCategoria().getNome(),
+                                                item.getProduto().getQuantidadeEstoque()
+                                        ),
+                                        item.getQuantidade()
+                                ))
+                                .toList()
+                ))
+                .toList();
+
+
+    }
+
     private void validaPedidoExistente(UUID id) throws Exception {
         findById(id).orElseThrow(() ->
                 new NotFoundException("Pedido não encontrado com ID: " + id));
