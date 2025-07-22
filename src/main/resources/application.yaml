@@ -16,3 +16,8 @@ datasource:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+jwt:
+  public:
+    key: classpath:app.pub
+  private:
+    key: classpath:app.key
